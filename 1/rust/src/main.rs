@@ -5,17 +5,15 @@ use std::io::Read;
 
 fn main() -> std::io::Result<()> {
     let part = 3; //part 1 / 2 / 3(both)
-    let samp = 1; //sample 1 / 0
+    let samp = 0; //sample 1 / 0
 
     let cur_path = env::current_dir()?;
-
     let mut sf = "/sample.txt";
     if samp == 0 {
         sf = "/input.txt";
     }
     let file_path = cur_path.parent().expect("path failed").display().to_string().clone() + &sf;
-
-    println!("----- {}", file_path);
+    //println!("----- {}", file_path);
 
     let mut input_file = File::open(file_path)?;
     let mut input_text = String::new();
@@ -25,8 +23,11 @@ fn main() -> std::io::Result<()> {
     for i in input_text.split("\n") {
         if i.len() > 0 {
             vec.push(i.parse().unwrap());
+        } else {
+            vec.push(-1);
         }
     }
+    vec.push(-1);
     if part == 1 {
         part_one(vec);
     } else if part == 2 {
@@ -39,24 +40,55 @@ fn main() -> std::io::Result<()> {
 }
 
 fn part_one(v: Vec<i32>) {
-    let mut inc = 0;
+    let mut cals = 0;
+    let mut elves: Vec<i32> = Vec::new();
     for i in 0..(v.len() - 1) {
-        let j = v[i];
-        if j < v[i + 1] {
-            inc += 1;
+        //println!("{}: {}", i, cals);
+        if v[i] > -1 {
+            cals += v[i];
+        } else {
+            elves.push(cals);
+            cals = 0;
         }
     }
-    println!("Part 1: {}", inc);
+    elves.push(cals);
+
+    let mut maxcal = 0;
+    let mut maxidx = 0;
+    for i in 0..(elves.len() - 1) {
+        let j = elves[i];
+        //println!("{}: {}", i, j);
+        if j > maxcal {
+            maxcal = j;
+            maxidx = i;
+        }
+    }
+    let maxidx2 = 1+ maxidx as i32;
+    println!("Part 1: idx {}, cal {}", maxidx2, maxcal);
+
 }
 
 fn part_two(v: Vec<i32>) {
-    let mut inc = 0;
-    for i in 0..(v.len() - 3) {
-        let s1 = v[i] + v[i + 1] + v[i + 2];
-        let s2 = v[i + 1] + v[i + 2] + v[i + 3];
-        if s1 < s2 {
-            inc += 1;
+    let mut cals = 0;
+    let mut elves: Vec<i32> = Vec::new();
+    for i in 0..(v.len() - 1) {
+        if v[i] > -1 {
+            cals += v[i];
+        } else {
+            elves.push(cals);
+            cals = 0;
         }
     }
-    println!("Part 2: {}", inc);
+    elves.push(cals);
+
+    // sort the list from smallest to biggest
+    elves.sort_unstable();
+
+    // print the last item, ie the biggest value (part_one solution!)
+    //println!("{}", elves[elves.len()-1]);
+
+    // add up the 3 largest values
+    let calsum = elves[elves.len()-1] + elves[elves.len()-2] + elves[elves.len()-3];
+
+    println!("Part 2: {}", calsum);
 }
