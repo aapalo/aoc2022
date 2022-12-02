@@ -65,7 +65,6 @@ fn part_one(v: Vec<i32>) {
     }
     let maxidx2 = 1+ maxidx as i32;
     println!("Part 1: idx {}, cal {}", maxidx2, maxcal);
-
 }
 
 fn part_two(v: Vec<i32>) {
